@@ -19,38 +19,36 @@
  * When editing your questions pay attention to your punctuation. Make sure you use question marks or periods.
  * Make sure the first answer is the correct one. Set at least 4 answers, any extras will be shuffled in.
  */
-var questions = [
-    {
-        "I have short brown legs.": [
-            "dachshund"
-        ]
-    },
-    {
-        "I have big jowls, the better to slobber with.": [
-            "st bernard"
-            
-        ]
-    },
-    {
-        "I have a short curly tail and I love to jump high.": [
-            "basenji"
-        ]
-    },
-    {
-        "I am a sweet furry carpet. I love the mountains where I was bred.": [
-            "afghan"
-        ]
-    },
-    {
-        "The fur on my back looks like someone rubbed me up the wrong way.": [
-            "rhodesian ridgeback"
-        ]
-    }
-];
+var questions = [{
+    "I have short stubby legs. I am playful but can be stubborn.": [
+        "dachshund"
+    ]
+}, {
+    "I have big jowls, the better to slobber with.": [
+        "st bernard"
+
+    ]
+}, {
+    "I have a short curly tail and I love to jump high.": [
+        "basenji"
+    ]
+}, {
+    "I am a sweet furry carpet. I love the mountains where I was bred.": [
+        "afghan"
+    ]
+}, {
+    "I’ve been the most popular breed for 25 years. I come in two colors.": [
+        "labrador"
+    ]
+}, {
+    "The fur on my back looks like someone rubbed me up the wrong way.": [
+        "rhodesian ridgeback"
+    ]
+}];
 
 // Route the incoming request based on type (LaunchRequest, IntentRequest,
 // etc.) The JSON body of the request is provided in the event parameter.
-exports.handler = function (event, context) {
+exports.handler = function(event, context) {
     try {
         console.log("event.session.application.applicationId=" + event.session.application.applicationId);
 
@@ -59,12 +57,12 @@ exports.handler = function (event, context) {
          * prevent someone else from configuring a skill that sends requests to this function.
          */
 
-//     if (event.session.application.applicationId !== "amzn1.echo-sdk-ams.app.05aecccb3-1461-48fb-a008-822ddrt6b516") {
-//         context.fail("Invalid Application ID");
-//      }
+        //     if (event.session.application.applicationId !== "amzn1.echo-sdk-ams.app.05aecccb3-1461-48fb-a008-822ddrt6b516") {
+        //         context.fail("Invalid Application ID");
+        //      }
 
         if (event.session.new) {
-            onSessionStarted({requestId: event.request.requestId}, event.session);
+            onSessionStarted({ requestId: event.request.requestId }, event.session);
         }
 
         if (event.request.type === "LaunchRequest") {
@@ -92,8 +90,7 @@ exports.handler = function (event, context) {
  * Called when the session starts.
  */
 function onSessionStarted(sessionStartedRequest, session) {
-    console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onSessionStarted requestId=" + sessionStartedRequest.requestId + ", sessionId=" + session.sessionId);
 
     // add any session init logic here
 }
@@ -102,8 +99,7 @@ function onSessionStarted(sessionStartedRequest, session) {
  * Called when the user invokes the skill without specifying what they want.
  */
 function onLaunch(launchRequest, session, callback) {
-    console.log("onLaunch requestId=" + launchRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onLaunch requestId=" + launchRequest.requestId + ", sessionId=" + session.sessionId);
 
     getWelcomeResponse(callback);
 }
@@ -112,8 +108,7 @@ function onLaunch(launchRequest, session, callback) {
  * Called when the user specifies an intent for this skill.
  */
 function onIntent(intentRequest, session, callback) {
-    console.log("onIntent requestId=" + intentRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onIntent requestId=" + intentRequest.requestId + ", sessionId=" + session.sessionId);
 
     var intent = intentRequest.intent,
         intentName = intentRequest.intent.name;
@@ -146,7 +141,7 @@ function onIntent(intentRequest, session, callback) {
     } else if ("AMAZON.HelpIntent" === intentName) {
         if (!session.attributes) {
             getWelcomeResponse(callback);
-        } else { 
+        } else {
             handleGetHelpRequest(intent, session, callback);
         }
     } else if ("AMAZON.StopIntent" === intentName) {
@@ -163,8 +158,7 @@ function onIntent(intentRequest, session, callback) {
  * Is not called when the skill returns shouldEndSession=true.
  */
 function onSessionEnded(sessionEndedRequest, session) {
-    console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId
-        + ", sessionId=" + session.sessionId);
+    console.log("onSessionEnded requestId=" + sessionEndedRequest.requestId + ", sessionId=" + session.sessionId);
 
     // Add any cleanup logic here
 }
@@ -172,13 +166,12 @@ function onSessionEnded(sessionEndedRequest, session) {
 // ------- Skill specific business logic -------
 
 var ANSWER_COUNT = 1;
-var GAME_LENGTH = 5;
+var GAME_LENGTH = 6;
 var CARD_TITLE = "Dog Breed Flash Cards"; // Be sure to change this for your skill.
 
 function getWelcomeResponse(callback) {
     var sessionAttributes = {},
-        speechOutput = "Let's learn about different dog breeds from around the world. I will ask you about " + GAME_LENGTH.toString()
-            + " dog breeds, try to get as many right as you can. Just say the name of the dog breed. Let's begin. ",
+        speechOutput = "Let's learn about different dog breeds from around the world. I will ask you about " + GAME_LENGTH.toString() + " dog breeds, try to get as many right as you can. Just say the name of the dog breed. Let's begin. ",
         shouldEndSession = false,
 
         gameQuestions = populateGameQuestions(),
@@ -202,8 +195,7 @@ function getWelcomeResponse(callback) {
         "correctAnswerIndex": correctAnswerIndex + 1,
         "questions": gameQuestions,
         "score": 0,
-        "correctAnswerText":
-            questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
+        "correctAnswerText": questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
     };
     callback(sessionAttributes,
         buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, shouldEndSession));
@@ -214,16 +206,16 @@ function populateGameQuestions() {
     var indexList = [];
     var index = questions.length;
 
-    if (GAME_LENGTH > index){
+    if (GAME_LENGTH > index) {
         throw "Invalid Game Length.";
     }
 
-    for (var i = 0; i < questions.length; i++){
+    for (var i = 0; i < questions.length; i++) {
         indexList.push(i);
     }
 
     // Pick GAME_LENGTH random questions from the list to ask the user, make sure there are no repeats.
-    for (var j = 0; j < GAME_LENGTH; j++){
+    for (var j = 0; j < GAME_LENGTH; j++) {
         var rand = Math.floor(Math.random() * index);
         index -= 1;
 
@@ -246,12 +238,12 @@ function populateRoundAnswers(gameQuestionIndexes, correctAnswerIndex, correctAn
 
     var index = answersCopy.length;
 
-    if (index < ANSWER_COUNT){
+    if (index < ANSWER_COUNT) {
         throw "Not enough answers for question.";
     }
 
     // Shuffle the answers, excluding the first element.
-    for (var j = 1; j < answersCopy.length; j++){
+    for (var j = 1; j < answersCopy.length; j++) {
         var rand = Math.floor(Math.random() * (index - 1)) + 1;
         index -= 1;
 
@@ -280,12 +272,12 @@ function handleAnswerRequest(intent, session, callback) {
 
     var index = answersCopy.length;
 
-    if (index < ANSWER_COUNT){
+    if (index < ANSWER_COUNT) {
         throw "Not enough answers for question.";
     }
 
     // Shuffle the answers, excluding the first element.
-    for (var j = 1; j < answersCopy.length; j++){
+    for (var j = 1; j < answersCopy.length; j++) {
         var rand = Math.floor(Math.random() * (index - 1)) + 1;
         index -= 1;
 
@@ -346,8 +338,7 @@ function handleAnswerRequest(intent, session, callback) {
         // if currentQuestionIndex is 4, we've reached 5 questions (zero-indexed) and can exit the game session
         if (currentQuestionIndex == GAME_LENGTH - 1) {
             speechOutput = userGaveUp ? "" : "That answer is ";
-            speechOutput += speechOutputAnalysis + "You got " + currentScore.toString() + " out of "
-                + GAME_LENGTH.toString() + " questions correct. Thank you for learning about dog breeds with Alexa!";
+            speechOutput += speechOutputAnalysis + "You got " + currentScore.toString() + " out of " + GAME_LENGTH.toString() + " questions correct. Thank you for learning about dog breeds with Alexa!";
             callback(session.attributes,
                 buildSpeechletResponse(CARD_TITLE, speechOutput, "", true));
         } else {
@@ -358,9 +349,9 @@ function handleAnswerRequest(intent, session, callback) {
             var roundAnswers = populateRoundAnswers(gameQuestions, currentQuestionIndex, correctAnswerIndex),
 
                 questionIndexForSpeech = currentQuestionIndex + 1,
-                repromptText =  spokenQuestion ;
+                repromptText = spokenQuestion;
             for (var i = 0; i < ANSWER_COUNT; i++) {
-                repromptText +=  ""
+                repromptText += ""
             }
             speechOutput += userGaveUp ? "" : "That answer is ";
             speechOutput += speechOutputAnalysis + "Your score is " + currentScore.toString() + ". " + repromptText;
@@ -372,8 +363,7 @@ function handleAnswerRequest(intent, session, callback) {
                 "correctAnswerIndex": correctAnswerIndex + 1,
                 "questions": gameQuestions,
                 "score": currentScore,
-                "correctAnswerText":
-                    questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
+                "correctAnswerText": questions[gameQuestions[currentQuestionIndex]][Object.keys(questions[gameQuestions[currentQuestionIndex]])[0]][0]
             };
             callback(sessionAttributes,
                 buildSpeechletResponse(CARD_TITLE, speechOutput, repromptText, false));
@@ -401,13 +391,9 @@ function handleGetHelpRequest(intent, session, callback) {
 
     // Do not edit the help dialogue. This has been created by the Alexa team to demonstrate best practices.
 
-    var speechOutput = "I will ask you to provide the name of a dog breed. I will give you a clue about the dog, you will need to provide the name. "
-        + "For example, If the clue is a warm bundle of brown friendliness, you would say golden retriever. To start a new game at any time, say, start new game. "
-        + "To repeat the last clue, say, repeat. "
-        + "Would you like to keep playing?",
-        repromptText = "To give an answer, respond with the correct dog breed. "
-        + "Would you like to keep playing?";
-        var shouldEndSession = false;
+    var speechOutput = "I will ask you to provide the name of a dog breed. I will give you a clue about the dog, you will need to provide the name. " + "For example, If the clue is a warm bundle of brown friendliness, you would say golden retriever. To start a new game at any time, say, start new game. " + "To repeat the last clue, say, repeat. " + "Would you like to keep playing?",
+        repromptText = "To give an answer, respond with the correct dog breed. " + "Would you like to keep playing?";
+    var shouldEndSession = false;
     callback(session.attributes,
         buildSpeechletResponseWithoutCard(speechOutput, repromptText, shouldEndSession));
 }
